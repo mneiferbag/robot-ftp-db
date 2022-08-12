@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  robot-ftp:
+    container_name: robot-ftp
+    image: stilliard/pure-ftpd:latest
+    ports:
+      - 8021:21
+      - 30000-30009:30000-30009
+    networks:
+      - robot-net
+    env_file: .env
+
+  robot-db:
+    container_name: robot-db
+    image: mysql:latest
+    depends_on:
+      - robot-ftp
+    ports:
+      - 8336:3306
+    networks:
+      - robot-net
+    env_file: .env
+
+  robot-processor:
+    container_name: robot-processor
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile_processor
+    depends_on:
+      - robot-db
+    networks:
+      - robot-net
+    env_file: .env
+
+  robot-server:
+    container_name: robot-server
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile_robot
+    depends_on:
+      - robot-db
+    networks:
+      - robot-net
+    env_file: .env
+    stdin_open: true
+    tty: true
+
+networks:
+  robot-net:
