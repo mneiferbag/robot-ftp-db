@@ -1,12 +1,13 @@
-#
-# Copyright (c) 2022 Markus Neifer
-# Licensed under the MIT License.
-# See file LICENSE in project root directory.
-#
+"""
+ Copyright (c) 2022 Markus Neifer
+ Licensed under the MIT License.
+ See file LICENSE in project root directory.
+"""
 import os
-import pymysql.cursors
 from ftplib import FTP
 from time import sleep
+
+import pymysql.cursors
 
 dbHost = os.environ.get('DB_HOST')
 dbPort = int(os.environ.get('DB_PORT'))
@@ -38,10 +39,10 @@ while i < 60:
         ftp.delete('data.csv')
         with connection:
             with connection.cursor() as cursor:
-                sql = "INSERT INTO article (name, count, created) VALUES (%s, %s, %s)"
-                cursor.execute(sql, ('Radkappe', 1, '2020-01-01'))
+                SQL = "INSERT INTO article (name, count, created) VALUES (%s, %s, %s)"
+                cursor.execute(SQL, ('Radkappe', 1, '2020-01-01'))
             connection.commit()
     i += 1
-    sleep(1) 
+    sleep(1)
 
 ftp.quit()
