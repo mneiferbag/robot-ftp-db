@@ -4,13 +4,13 @@
 # See file LICENSE in project root directory.
 #
 *** Settings ***
-Documentation    Import end-to-end tests.
+Documentation    Testing an FTP upload-processing-import process.
 Library          FtpLibrary
 Library          DatabaseLibrary
 
 
 *** Test Cases ***
-Import E2E Test
+Upload Process Import Test
     [Documentation]    Testing FTP upload and rows in database.
 
     Connect Database
