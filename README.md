@@ -48,9 +48,10 @@ Save environment.
   - [Robot Framework User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html)
 - Python
   - [ftplib — FTP protocol client](https://docs.python.org/3/library/ftplib.html)
+  - [Psycopg](https://www.psycopg.org/) - PostgreSQL adapter for the Python programming language
   - [PyMySQL’s Documentation](https://pymysql.readthedocs.io/en/latest/index.html)
 
 ## Tasks
 
-- [ ] Switch to SQLite or PostgreSQL
+- [ ] Switch to PostgreSQL
 - [ ] Create DB schema on DB container build
