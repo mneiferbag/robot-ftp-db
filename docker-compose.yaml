@@ -3,11 +3,9 @@ version: '3.8'
 services:
   robot-db:
     container_name: robot-db
-    image: mysql:latest
-    depends_on:
-      - robot-ftp
+    image: postgres:latest
     ports:
-      - 8336:3306
+      - 5432:5432
     networks:
       - robot-net
     env_file: .env
@@ -39,7 +37,7 @@ services:
     container_name: robot-monitor
     build:
       context: .
-      dockerfile: ./docker/Dockerfile_robot
+      dockerfile: ./docker/Dockerfile_monitor
     depends_on:
       - robot-db
     networks:
