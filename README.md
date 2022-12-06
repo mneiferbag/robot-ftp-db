@@ -14,11 +14,11 @@ Installation
     pip install robotframework-ftplibrary
     pip install robotframework-databaselibrary
 
-Or use `requirements.txt`. Check installation with `$ robot --version`
+Or use existing `requirements.txt`. Check installation with `robot --version`.
 
 Start servers with `docker compose up`.
 
-Run test with `$ robot --outputdir ./log ./upload_tests/upload_e2e.robot`
+Run test with `robot --outputdir ./log ./upload_tests/upload_e2e.robot`
 
 ## Python
 
@@ -26,7 +26,7 @@ Create virtual environment.
 
     python -m venv .venv
 
-List packages.
+Activate environment, for example with `.venv\Scripts\activate.bat` on Windows and list packages.
 
     pip list
 
@@ -34,9 +34,21 @@ Restore environment.
 
     pip install -r requirements.txt
 
-Save environment.
+Save environment after adding packages.
 
     pip freeze > requirements.txt
+
+## PostgreSQL
+
+Initialize a database cluster in directory `data` with `initdb -D data`.
+
+Start server with `pg_ctl -D data -l log\pgsql.log start`.
+
+Create database with `createdb robot`.
+
+Connect to database with `psql robot`.
+
+Stop server with `pg_ctl stop -D data -m smart`.
 
 ## Links
 
@@ -49,9 +61,10 @@ Save environment.
 - Python
   - [ftplib — FTP protocol client](https://docs.python.org/3/library/ftplib.html)
   - [Psycopg](https://www.psycopg.org/) - PostgreSQL adapter for the Python programming language
-  - [PyMySQL’s Documentation](https://pymysql.readthedocs.io/en/latest/index.html)
+- PostgreSQL
+  - [Documentation](https://www.postgresql.org/docs/)
 
 ## Tasks
 
-- [ ] Switch to PostgreSQL
 - [ ] Create DB schema on DB container build
+- [X] Switch to PostgreSQL
