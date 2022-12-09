@@ -1,4 +1,4 @@
-# Robot Framework FTP and Database Example
+# Robot Framework - FTP and Database Example
 
 Licensed under the MIT License. See file [LICENSE](./LICENSE).
 
@@ -16,7 +16,7 @@ Installation
 
 Or use existing `requirements.txt`. Check installation with `robot --version`.
 
-Start servers with `docker compose up`.
+Start servers with `docker compose up -d`.
 
 Run test with `robot --outputdir ./log ./upload_tests/upload_e2e.robot`
 
@@ -40,15 +40,19 @@ Save environment after adding packages.
 
 ## PostgreSQL
 
-Initialize a database cluster in directory `data` with `initdb -D data`.
+Initialize a database cluster in directory `psqldb` with `initdb -D psqldb`.
 
-Start server with `pg_ctl -D data -l log\pgsql.log start`.
+Start server with `pg_ctl start -D psqldb -l log\psql.log`.
 
-Create database with `createdb robot`.
+Create database with `createdb robotdb`.
 
-Connect to database with `psql robot`.
+Create database schema with `bin\createSchema.bat`.
 
-Stop server with `pg_ctl stop -D data -m smart`.
+Connect to database with `psql robotdb`.
+
+Quit the psql program with `\q` or `\quit`.
+
+Stop server with `pg_ctl stop -D psqldb -m smart`.
 
 ## Links
 
@@ -61,6 +65,7 @@ Stop server with `pg_ctl stop -D data -m smart`.
 - Python
   - [ftplib — FTP protocol client](https://docs.python.org/3/library/ftplib.html)
   - [Psycopg](https://www.psycopg.org/) - PostgreSQL adapter for the Python programming language
+  - [python-dotenv](https://github.com/theskumar/python-dotenv) - reads key-value pairs from a .env file and can set them as environment variables
 - PostgreSQL
   - [Documentation](https://www.postgresql.org/docs/)
 

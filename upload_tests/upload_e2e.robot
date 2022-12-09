@@ -15,8 +15,8 @@ Upload Process Import Test
 
     Connect Database
 
-    Log To Console    Testing precondition
-    Check if not exists in database    select * from article
+    Log To Console                Test fixture
+    Delete All Rows From Table    article
 
     Disconnect From Database
 
@@ -26,17 +26,17 @@ Upload Process Import Test
     Ftp Close
 
     Log To Console    Wait for processing
-    Sleep    30s
+    Sleep             30 seconds
 
     Connect Database
 
-    Log To Console    Testing postcondition
-    Check if exists in database    select * from article
+    Log To Console                 Testing postcondition
+    Check if exists in database    select * from article where name = 'Radkappe'
 
     Disconnect From Database
 
 
 *** Keywords ***
 Connect Database
-    Log To Console         Connecting to %{DB_HOST}:%{DB_PORT}, DB %{DB_NAME} as %{DB_USER}
-    Connect To Database    pymysql    %{DB_NAME}    %{DB_USER}    %{MYSQL_ROOT_PASSWORD}    %{DB_HOST}    %{DB_PORT}
+    Log To Console         Connecting to %{PGHOST}:%{PGPORT}, DB %{PGDATABASE} as %{PGUSER}
+    Connect To Database    psycopg2    %{PGDATABASE}    %{PGUSER}    %{PGPASSWORD}    %{PGHOST}    %{PGPORT}

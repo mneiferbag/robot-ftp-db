@@ -8,12 +8,13 @@ from ftplib import FTP
 from time import sleep
 
 import psycopg2
+from dotenv import load_dotenv
 
-dbHost = os.environ.get('DB_HOST')
-dbPort = int(os.environ.get('DB_PORT'))
-dbName = os.environ.get('DB_NAME')
-dbUser = os.environ.get('DB_USER')
-dbPassword = os.environ.get('POSTGRES_PASSWORD')
+load_dotenv()
+
+dbName = os.environ.get('PGDATABASE')
+dbUser = os.environ.get('PGUSER')
+dbPassword = os.environ.get('PGPASSWORD')
 
 ftpHost = os.environ.get('PUBLICHOST')
 ftpPort = int(os.environ.get('FTP_PORT'))
@@ -26,7 +27,7 @@ ftp.connect(ftpHost, ftpPort)
 ftp.login(user=ftpUser, passwd=ftpPassword)
 i = 1
 
-while i < 60:
+while True:
     files = ftp.nlst()
     print(f'{i} - {files}')
     if 'data.csv' in files:

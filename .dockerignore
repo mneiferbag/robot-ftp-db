@@ -1,0 +1,9 @@
+# Git Repository
+.git/
+.github/
+
+# Python Virtual Environment
+.venv/
+
+# PostgreSQL
+psqldb/
