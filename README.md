@@ -80,4 +80,4 @@ Stop server with `pg_ctl stop -D psqldb -m smart`.
 ## Tasks
 
 - [ ] Create DB schema on DB container build
-- [X] Switch to PostgreSQL
+- [ ] Replace hard coded insert in src/processor.py with ftp file content
