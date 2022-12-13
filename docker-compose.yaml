@@ -4,6 +4,8 @@ services:
   robot-db:
     container_name: robot-db
     image: postgres:latest
+    volumes:
+      - ./src/createSchema.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - 5432:5432
     networks:
