@@ -20,23 +20,31 @@ Start servers with `docker compose up -d`.
 
 Run test with `robot --outputdir ./log ./upload_tests/upload_e2e.robot`
 
+The Docker files and test files assume that a `.env` file exists with the following content.
+
+    PUBLICHOST=<ftp server name>
+    FTP_PORT=<ftp server port>
+    FTP_USER_NAME=<ftp user name>
+    FTP_USER_PASS=<ftp user password>
+    FTP_USER_HOME=<ftp user home path>
+    POSTGRES_DB=<postgresql database name>
+    POSTGRES_USER=<postgresql user name>
+    POSTGRES_PASSWORD=<postgresql user password>
+    PGHOST=<db server name>
+    PGPORT=<db server port>
+    PGDATABASE=<postgresql database name>
+    PGUSER=<postgresql user name>
+    PGPASSWORD=<postgresql user password>
+
 ## Python
 
-Create virtual environment.
+Create virtual environment with `python -m venv .venv`.
 
-    python -m venv .venv
+Activate environment, for example with `.venv\Scripts\activate.bat` on Windows and list packages with `pip list`.
 
-Activate environment, for example with `.venv\Scripts\activate.bat` on Windows and list packages.
+Restore environment with `pip install -r requirements.txt`.
 
-    pip list
-
-Restore environment.
-
-    pip install -r requirements.txt
-
-Save environment after adding packages.
-
-    pip freeze > requirements.txt
+Save environment after adding packages with `pip freeze > requirements.txt`.
 
 ## PostgreSQL
 
