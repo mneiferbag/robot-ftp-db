@@ -52,8 +52,12 @@ while i < 200:
                         cursor.execute(SQL, (int(splitted_line[0]), splitted_line[1], int(
                             splitted_line[2]), splitted_line[3]))
             connection.commit()
+            print("Inserted file content into database")
         ftp.delete(DATA_FILE)
+        print("Deleted retrieved file")
     i += 1
     sleep(1)
 
 ftp.quit()
+
+print("Logged out of FTP")
