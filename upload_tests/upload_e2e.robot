@@ -13,11 +13,9 @@ Library          DatabaseLibrary
 Upload Process Import Test
     [Documentation]    Testing FTP upload and rows in database.
 
+    Log To Console              Test precondition
     Connect Database
-
-    Log To Console                Test fixture
-    Delete All Rows From Table    article
-
+    Execute Sql Script          src${/}testPrecondition.sql
     Disconnect From Database
 
     Log To Console    Connecting to %{PUBLICHOST}:%{FTP_PORT} as %{FTP_USER_NAME}
@@ -25,14 +23,12 @@ Upload Process Import Test
     Upload File       data.csv
     Ftp Close
 
-    Log To Console    Wait for processing
-    Sleep             30 seconds
+    Log To Console    Waiting for processing
+    Sleep             10 seconds
 
+    Log To Console                 Test postcondition
     Connect Database
-
-    Log To Console                 Testing postcondition
-    Check if exists in database    select * from article where name = 'Radkappe'
-
+    Check if exists in database    SELECT * FROM article WHERE id = 1 AND name = 'Radkappe' AND count = 1 AND created = '2020-01-01'
     Disconnect From Database
 
 
