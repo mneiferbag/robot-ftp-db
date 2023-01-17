@@ -1,6 +1,6 @@
 # Article - Testing Upload-Import Processes
 
-A common business process consists on uploading a file to an FTP server. Then the file is processed in some way and its content is imported into a database. How could such process be monitored and tested? The following describes an aproach to monitor and test such a process using the [Robot Framework](https://robotframework.org/).
+A common business process consists on uploading a file to an FTP server. Then the file is processed in some way and its content is imported into a database. How could such process be tested and monitored? The following describes an aproach to test and monitor such a process using the [Robot Framework](https://robotframework.org/).
 
 ## The Business Process
 
@@ -18,19 +18,19 @@ As shown, three services are involved in this process.
 - Processing service
 - Database service
 
-These services might be implemented as separate server machines, VMs or containerized services. To monitor and test the process, we would need a fourth service. We will create a Robot Framework test case to implement the monitor.
+These services might be implemented as separate server machines, VMs or containerized services. To test and monitor the process, we would need a fourth service. A Robot Framework test case will be created to implement the monitor.
 
 ## The Test Case
 
 Generally, a test case follows the well known AAA pattern: arrange, act, assert. In other words, it has the following three logical steps.
 
-1. Precondition (Setup / Fixture)
+1. Setup (Precondition / Fixture)
 2. One or more action steps
 3. Expected outcome (Postcondition)
 
 In our case here, to test the process, we need the following concrete steps.
 
-1. Precondition
+1. Setup
    - Clean up test data from the database.
 2. Action steps
    - Upload test data file to FTP server.
@@ -38,7 +38,7 @@ In our case here, to test the process, we need the following concrete steps.
 3. Expected outcome
    - Check that the test data file content was written to the database.
 
-Note: you should always try to avoid waiting for time in test cases and use other mechanisms such as hooks or messaging to be notified when a dependee has finished his work. However, to keep things simple, we will wait for some time here.
+Note: you should always try to avoid waiting for time in test cases and use other mechanisms such as hooks or messaging to be notified when a dependee has finished his work. However, to keep things simple, we will simply wait for some time here.
 
 Let's see how Robot Framework can help us with this test case.
 
@@ -51,7 +51,7 @@ To get an impression what test cases in Robot Framework look like, let's have a 
     *** Settings ***
     Documentation    Some useful test suite documentation here.
     Library          SomeExternalLibrary
-    Test Setup       Keyword To Cleanup Old Testdata                   # Arrange
+    Test Setup       Keyword To Do Setup                               # Arrange
     
     *** Test Cases ***
     My First Test
@@ -64,7 +64,7 @@ To get an impression what test cases in Robot Framework look like, let's have a 
 
 You can easily recognize the AAA pattern. I use the test setup in the settings section for the arrange step. But there are other options as well. See [Test setup and teardown](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#test-setup-and-teardown) in the documentation.
 
-I use the space separated format, where two or more spaces separate pieces of the data, such as keywords and their arguments. So, in the example above, `Keyword For Action One` is parsed as one token because the words are separated by one space. But `Keyword` and `Parameters` are parsed as two token because they are separated by more then two spaces. For other formats see [Supported file formats](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#supported-file-formats) in the documentation.
+I use the space separated format, where two or more spaces separate pieces of the data, such as keywords and their arguments. So, in the example above, `Keyword For Action One` is parsed as one token because the words are separated only by one space. But `Keyword` and `Parameters` are parsed as two token because they are separated by more then two spaces. For other formats see [Supported file formats](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#supported-file-formats) in the documentation.
 
 Let's have a look at the test case for our business process as we would write it for Robot Framework.
 
@@ -114,9 +114,11 @@ See [Creating user keywords](https://robotframework.org/robotframework/latest/Ro
 
 You might have noticed the special syntax to access environment variables like `%{PGHOST}`. This will retrieve the value of the environment variable with name `PGHOST`. See [Variables](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#variables) in the documentation.
 
+This list of features is by no means complete. I just gave you some examples to wheaten your appetite. Have a look at the extensive documentation to see what other features are available. It is recommended to start with the [User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html).
+
 ## Using Gherkin for Behavior-driven Development (BDD)
 
-Robot also supports writing test cases in Behavior-driven style using the Gherkin language. Gherkin is supported out-of-box. No additional plugins or libraries are necessary to use this style. Robot Framework simply drops the first word when searching for matching keywords.
+Robot Framework also supports writing test cases in Behavior-driven style using the Gherkin language. Gherkin is supported out-of-box. No additional plugins or libraries are necessary to use this style. Robot Framework simply drops the first word when searching for matching keywords.
 
     # TODO rewrite this
     Given this
@@ -125,8 +127,44 @@ Robot also supports writing test cases in Behavior-driven style using the Gherki
 
 See [Different test case styles](http://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#different-test-case-styles) in the documentation.
 
+## Reporting
+
+When you execute the test case, a nice HTML report is produced in the directory you set with the command line option `--outputdir`. The following shows how to execute the test case in a bash terminal.
+
+    # robot --outputdir ./log ./upload_tests/upload_e2e.robot
+    ==============================================================================
+    Upload E2E :: Testing an FTP upload-processing-import process.                
+    ==============================================================================
+    Upload Process Import Test :: Testing FTP upload and rows in datab... Test precondition
+    .Connecting to robot-db:5432, DB robotdb as robotusr
+    ...Connecting to robot-ftp:21 as bob
+    ....Waiting for processing
+    Upload Process Import Test :: Testing FTP upload and rows in datab... ..Test postcondition
+    .Connecting to robot-db:5432, DB robotdb as robotusr
+    Upload Process Import Test :: Testing FTP upload and rows in datab... | PASS |
+    ------------------------------------------------------------------------------
+    Upload E2E :: Testing an FTP upload-processing-import process.        | PASS |
+    1 test, 1 passed, 0 failed
+    ==============================================================================
+    Output:  /usr/src/app/log/output.xml
+    Log:     /usr/src/app/log/log.html
+    Report:  /usr/src/app/log/report.html
+    # 
+
+Open file `report.html` to see the report. You'll see some summary information, test statistics and test details.
+
+![report.html](./report.html.png "report.html")
+
+You can drill down into the test case details by opening the log file `log.html`.
+
+![log.html](./log.html.png "log.html")
+
+As you can see, there's a lot of information to help you analyse your test execution results.
+
 ## Try It Yourself
 
 If you want to try this solution, you'll find a repository on [GitHub](https://github.com/mneiferbag/robot-ftp-db) with a [README.md](https://github.com/mneiferbag/robot-ftp-db/blob/main/README.md) that has a detailed description about using Docker to simulate this solution.
 
 To have a simple, self-contained example that is easy to try for yourself, the readme file describes how to set up Docker containers for all four services. This example uses Pure-FTPd as FTP service, PostgreSQL as database service and a simple Python script to simulate a processing service.
+
+To turn the test case into a monitor, you could set up a cron job or task for your favourite CI/CD tool that runs the test case at given time intervalls.
