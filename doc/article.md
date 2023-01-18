@@ -4,7 +4,7 @@ A common business process consists on uploading a file to an FTP server. Then th
 
 ## The Business Process
 
-The business process is the result of the following steps.
+The business process consists of the following steps.
 
 1. An external entity uploads a file to the FTP server. The external entity might ba a human user or some service.
 2. The processing service monitoring the FTP server for new files reads the file content.
@@ -18,7 +18,7 @@ As shown, three services are involved in this process.
 - Processing service
 - Database service
 
-These services might be implemented as separate server machines, VMs or containerized services. To test and monitor the process, we would need a fourth service. A Robot Framework test case will be created to implement the monitor.
+These services might be implemented as separate server machines, VMs or containerized services. To test and monitor the process, we would need a fourth service. In this article, a Robot Framework test case will be created to implement the monitor.
 
 ## The Test Case
 
@@ -26,16 +26,16 @@ Generally, a test case follows the well known AAA pattern: arrange, act, assert.
 
 1. Setup (Precondition / Fixture)
 2. One or more action steps
-3. Expected outcome (Postcondition)
+3. Expected result (Postcondition)
 
-In our case here, to test the process, we need the following concrete steps.
+In our case here, to test the upload-import process, we need the following concrete steps.
 
 1. Setup
-   - Clean up test data from the database.
+   - Clean up old test data from the database.
 2. Action steps
    - Upload test data file to FTP server.
    - Wait some time for processing.
-3. Expected outcome
+3. Expected result
    - Check that the test data file content was written to the database.
 
 Note: you should always try to avoid waiting for time in test cases and use other mechanisms such as hooks or messaging to be notified when a dependee has finished his work. However, to keep things simple, we will simply wait for some time here.
@@ -44,14 +44,14 @@ Let's see how Robot Framework can help us with this test case.
 
 ## Introducing Robot Framework
 
-Robot Framework is a generic framework for robotic process automation (RPA) and test automation. Specifically keyword-driven testing. It uses plain text files and a tabular format to describe test cases with keywords implemented in external libraries. Most libraries are implemented in Python but the use of other programming languages are possible as well.
+Robot Framework is a generic framework for robotic process automation (RPA) and test automation. Specifically keyword-driven testing. It uses plain text files and a tabular format to describe test cases with keywords implemented in external libraries. Most libraries are implemented in Python but the use of other programming languages is possible as well.
 
 To get an impression what test cases in Robot Framework look like, let's have a look at a very simple generic test case.
 
     *** Settings ***
     Documentation    Some useful test suite documentation here.
     Library          SomeExternalLibrary
-    Test Setup       Keyword To Do Setup                               # Arrange
+    Test Setup       Keyword For Setup                                 # Arrange
     
     *** Test Cases ***
     My First Test
@@ -91,7 +91,7 @@ Let's have a look at the test case for our business process as we would write it
         Check if exists in database    SELECT * FROM article WHERE id = 1 AND name = 'Radkappe' AND count = 1 AND created = '2020-01-01'
         Disconnect From Database
 
-First, in the test setup, we reset the database and delete existing test data. Then, we upload a file to the FTP server and wait for the file to be processed. Finally, we assert that the content of the file we have uploaded to the FTP server has been written to the database.
+First, in the test setup, we reset the database and delete existing old test data. Then, we upload a file to the FTP server and wait for the file to be processed. Finally, we assert that the content of the file we have uploaded to the FTP server has been written to the database.
 
 ## Robot Framework Features
 
@@ -103,7 +103,7 @@ It starts with a settings section, where you can add some documentation, import 
 
 After the settings section follows the test cases section. Each test case starts with a name and is followed by keywords. As already explained, keywords for a test case are indented by spaces and arguments to keywords are separated by spaces. Four spaces are recommended. Keywords come either from an external library or you can implement them yourself.
 
-Creating keywords for yourself is very easy. They are created in a separate keywords section that follows the test cases section. The test cases uses the keyword "Connect Database". Here is the definition of this keyword.
+Creating keywords for yourself is very easy. They are created in a separate keywords section that follows the test cases section. This test case uses the keyword "Connect Database". Here is the definition of this keyword.
 
     *** Keywords ***
     Connect Database
@@ -116,20 +116,29 @@ You might have noticed the special syntax to access environment variables like `
 
 This list of features is by no means complete. I just gave you some examples to wheaten your appetite. Have a look at the extensive documentation to see what other features are available. It is recommended to start with the [User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html).
 
-## Using Gherkin for Behavior-driven Development (BDD)
+## Using Gherkin with Behavior-driven Development (BDD)
 
-Robot Framework also supports writing test cases in Behavior-driven style using the Gherkin language. Gherkin is supported out-of-box. No additional plugins or libraries are necessary to use this style. Robot Framework simply drops the first word when searching for matching keywords.
+Robot Framework also supports writing test cases in behavior-driven development style using the [Gherkin language](https://cucumber.io/docs/gherkin/). Gherkin is supported out-of-the-box. No additional plugins or libraries are necessary to use this style. Robot Framework simply drops the first word when searching for matching keywords. So we could rewrite our existing test case to get a BDD scenario as follows.
 
-    # TODO rewrite this
-    Given this
-    When that
-    Then foo
+    When Log To Console    Connecting to %{PUBLICHOST}:%{FTP_PORT} as %{FTP_USER_NAME}
+    And Ftp Connect    %{PUBLICHOST}    %{FTP_USER_NAME}    %{FTP_USER_PASS}    %{FTP_PORT}
+    And Upload File    data.csv
+    And Ftp Close
+    And Log To Console    Waiting for processing
+    And Sleep    10 seconds
+    
+    Then Log To Console    Test postcondition
+    And Connect Database
+    And Check if exists in database    SELECT * FROM article WHERE id = 1 AND name = 'Radkappe' AND count = 1 AND created = '2020-01-01'
+    And Disconnect From Database
 
 See [Different test case styles](http://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html#different-test-case-styles) in the documentation.
 
+Note: I added just the Gherkin keywords `When`, `Then`, `And` in front of the keywords to illustrate how keyword resolution works in this case. If you would like to use BDD scenarios for your testing, I strongly recommend to use user defined keywords to make the scenarios more readable.
+
 ## Reporting
 
-When you execute the test case, a nice HTML report is produced in the directory you set with the command line option `--outputdir`. The following shows how to execute the test case in a bash terminal.
+When you execute the test cases, a nice HTML report is produced in the directory you set with the command line option `--outputdir`. The following shows how to execute the test case file `upload_e2e.robot` in a bash terminal.
 
     # robot --outputdir ./log ./upload_tests/upload_e2e.robot
     ==============================================================================
@@ -163,8 +172,10 @@ As you can see, there's a lot of information to help you analyse your test execu
 
 ## Try It Yourself
 
-If you want to try this solution, you'll find a repository on [GitHub](https://github.com/mneiferbag/robot-ftp-db) with a [README.md](https://github.com/mneiferbag/robot-ftp-db/blob/main/README.md) that has a detailed description about using Docker to simulate this solution.
+If you want to try this solution, you'll find a repository on [GitHub](https://github.com/mneiferbag/robot-ftp-db) with a [README.md](https://github.com/mneiferbag/robot-ftp-db/blob/main/README.md) that has a description about using Docker to simulate this solution.
 
-To have a simple, self-contained example that is easy to try for yourself, the readme file describes how to set up Docker containers for all four services. This example uses Pure-FTPd as FTP service, PostgreSQL as database service and a simple Python script to simulate a processing service.
+To have a simple, self-contained example that is easy to try for yourself, the readme file describes how to use Docker Compose to set up containers for all four services. This example uses Pure-FTPd as FTP service, PostgreSQL as database service and a simple Python script to simulate a processing service.
 
-To turn the test case into a monitor, you could set up a cron job or task for your favourite CI/CD tool that runs the test case at given time intervalls.
+Finally, to turn the test suite into a monitor, you could set up a cron job or task for your favourite CI/CD tool like Jenkins, that runs the test suite at given time intervalls.
+
+I hope you now have an impression about a posible solution to test upload-import processes and how Robot Framework could help you with this task. Please let me know what you think about this solution.
