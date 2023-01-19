@@ -1,4 +1,4 @@
-# Article - Testing Upload-Import Processes
+# Article - Testing Upload-Import Processes with Robot Framework
 
 A common business process consists of uploading a file to an FTP server. Then the file is processed in some way and its content is imported into a database. How could such process be tested and monitored? The following describes an approach to test and monitor such a process using the [Robot Framework](https://robotframework.org/).
 
