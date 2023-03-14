@@ -69,6 +69,7 @@ Stop server with `pg_ctl stop -D psqldb -m smart`.
   - [DatabaseLibrary Doc](https://franz-see.github.io/Robotframework-Database-Library/api/0.5/DatabaseLibrary.html)
   - [FtpLibrary](https://kowalpy.github.io/Robot-Framework-FTP-Library/FtpLibrary.html)
   - [Robot Framework User Guide](https://robotframework.org/robotframework/latest/RobotFrameworkUserGuide.html)
+  - [Test Library Example Python](https://github.com/mneiferbag/robot-python-test-library)
   - [Test Library Example Rust](https://github.com/mneiferbag/robot-rust-test-library)
 - Python
   - [ftplib — FTP protocol client](https://docs.python.org/3/library/ftplib.html)
