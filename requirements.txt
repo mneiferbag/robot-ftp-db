@@ -2,7 +2,7 @@ cffi==1.15.1
 cryptography==46.0.7
 psycopg2-binary==2.9.5
 pycparser==2.21
-python-dotenv==0.21.0
+python-dotenv==1.2.2
 robotframework==5.0.1
 robotframework-databaselibrary==1.2.4
 robotframework-ftplibrary==1.9
